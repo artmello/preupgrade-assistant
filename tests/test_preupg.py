@@ -11,6 +11,7 @@ from preupg import settings, xml_manager
 from preupg.utils import (PostupgradeHelper, FileHelper,
                           OpenSCAPHelper, ModuleSetUtils)
 from preupg.report_parser import ReportParser
+from preupg.settings import ReturnValues
 
 try:
     import base
@@ -34,13 +35,12 @@ def setup_preupg_environment(args, content, tmp_dir, mode=None):
     a = Application(Conf(dc, settings, cli))
     # Prepare all variables for test
     a.conf.source_dir = os.getcwd()
-    a.content = a.conf.contents
-    a.basename = os.path.basename(a.content)
+    a.determine_module_set_location_info()
     a.openscap_helper = OpenSCAPHelper(a.conf.assessment_results_dir,
                                        a.conf.result_prefix,
                                        a.conf.xml_result_name,
                                        a.conf.html_result_name,
-                                       a.content)
+                                       a.all_xccdf_xml_path)
     return a
 
 

@@ -59,7 +59,8 @@ class XCCDFCompose(object):
         target_tree = ComposeXML.run_compose(
             self.dir_name, generate_from_ini=generate_from_ini)
 
-        report_filename = os.path.join(self.dir_name, settings.content_file)
+        report_filename = os.path.join(self.dir_name,
+                                       settings.all_xccdf_xml_filename)
         if generate_from_ini:
             try:
                 FileHelper.write_to_file(

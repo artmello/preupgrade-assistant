@@ -12,9 +12,13 @@ preupg [--version]
 
 preupg [-l, --list-contents-set]
 
-preupg [-d, --debug] [-S, --skip-common] [-s, --scan MODULE_SET] [-m, --mode MODE] [--force] [--text] [--dst-arch ARCH] [-c, --contents ALL_XCCDF_PATH] [--old-report-style] [--select-rules] [-v, --verbose]
+preupg [-s, --scan MODULE_SET] [-d, --debug] [-S, --skip-common] [-m, --mode MODE] [--force] [--text] [--dst-arch ARCH] [--old-report-style] [--select-rules] [-v, --verbose]
+
+preupg [-c, --contents ALL_XCCDF_PATH] [-d, --debug] [-S, --skip-common] [-m, --mode MODE] [--force] [--text] [--dst-arch ARCH] [--old-report-style] [--select-rules] [-v, --verbose]
 
 preupg [--list-rules] [-s, --scan MODULE_SET]
+
+preupg [--list-rules] [-c, --contents ALL_XCCDF_PATH]
 
 preupg [--riskcheck] [-v, --verbose]
 

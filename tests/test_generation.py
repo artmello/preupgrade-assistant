@@ -74,7 +74,8 @@ class TestGlobalContent(base.TestCase):
 
         xccdf_compose = XCCDFCompose(os.path.join(self.temp_dir, FOO_DIR))
         xccdf_compose.generate_xml()
-        all_xccdf = os.path.join(self.result_dir, settings.content_file)
+        all_xccdf = os.path.join(self.result_dir,
+                                 settings.all_xccdf_xml_filename)
         self.assertTrue(os.path.exists(all_xccdf))
         dummy_lines = FileHelper.get_file_content(all_xccdf, 'rb')
 

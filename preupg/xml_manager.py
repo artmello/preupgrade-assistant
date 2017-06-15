@@ -178,12 +178,11 @@ class XmlManager(object):
     """
     Class operates with XML oscap result
     """
-    def __init__(self, dirname, scenario, filename, result_base):
+    def __init__(self, dirname, scenario, result_base):
         """
         dirname contains path to result
         """
         self.dirname = dirname
-        self.filename = filename.split('.')[0]
         self.result_base = result_base
         self.scenario = scenario
         self.xml_solution_files = {}
