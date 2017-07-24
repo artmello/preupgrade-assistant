@@ -477,10 +477,8 @@ class Application(object):
             shutil.move(xccdf_compose.get_compose_dir_name(), self.assessment_dir)
 
         self.common.prep_symlinks(self.assessment_dir,
-                                  scenario=self.get_proper_scenario(scenario))            
+                                  scenario=self.get_proper_scenario(scenario))
 
-        if self.conf.contents:
-            self.assessment_dir = os.path.dirname(self.content)
         return 0
 
     def copy_preupgrade_scripts(self, assessment_dir):
