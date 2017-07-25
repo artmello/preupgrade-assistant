@@ -714,11 +714,11 @@ class Application(object):
                                               self.conf.html_result_name,
                                               self.content)
         if self.conf.riskcheck:
-            if not os.path.exists(self.openscap_helper.get_default_xml_result_path()):
-                log_message("The 'preupg' command was not run yet. Run it to check for possible risks.")
-                return ReturnValues.PREUPG_BEFORE_RISKCHECK
-            return_val = XccdfHelper.check_inplace_risk(self.openscap_helper.get_default_xml_result_path(),
-                                                        self.conf.verbose)
+            return_val = XccdfHelper.check_inplace_risk(
+                self.openscap_helper.get_default_xml_result_path(),
+                self.conf.verbose)
+            if return_val == -1:
+                return PreupgReturnCodes.PREUPG_BEFORE_RISKCHECK
             return return_val
 
         if self.conf.scan:
