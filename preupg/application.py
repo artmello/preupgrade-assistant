@@ -19,7 +19,7 @@ except ImportError:
 
 from preupg import xml_manager, settings
 from preupg.common import Common
-from preupg.settings import ReturnValues
+from preupg.settings import PreupgReturnCodes
 from preupg.scanning import ScanProgress, ScanningHelper
 from preupg.utils import (FileHelper, ProcessHelper, DirHelper, OpenSCAPHelper,
                           MessageHelper, TarballHelper, SystemIdentification,
@@ -433,7 +433,7 @@ class Application(object):
         self.common = Common(self.conf)
         if not self.conf.skip_common:
             if not self.common.common_results():
-                return ReturnValues.SCRIPT_TXT_MISSING
+                return PreupgReturnCodes.SCRIPT_TXT_MISSING
         return 0
 
     def is_module_set_valid(self):
@@ -495,7 +495,7 @@ class Application(object):
         """The function is used for scanning system with all steps."""
         self._set_devel_mode()
         if not self.is_module_set_valid():
-            return ReturnValues.SCENARIO
+            return PreupgReturnCodes.SCENARIO
         ret_val = self.prepare_scan_system()
         if ret_val != 0:
             return ret_val
@@ -513,13 +513,13 @@ class Application(object):
             self.report_parser = ReportParser(self.content)
         except IOError:
             log_message("The module {0} does not exist.".format(self.content))
-            return ReturnValues.SCENARIO
+            return PreupgReturnCodes.SCENARIO
         if not self.conf.contents:
             try:
                 version = ModuleSetUtils.get_module_set_os_versions(self.conf.scan)
             except EnvironmentError as err:
                 log_message(str(err), level=logging.ERROR)
-                return ReturnValues.SCENARIO
+                return PreupgReturnCodes.SCENARIO
         if self.conf.mode:
             lines = [i.rstrip() for i in
                      FileHelper.get_file_content(
@@ -642,13 +642,13 @@ class Application(object):
                 not self.conf.list_rules:
             self.conf.scan = self._get_default_module_set()
             if not self.conf.scan:
-                return ReturnValues.SCENARIO
+                return PreupgReturnCodes.SCENARIO
 
         if self.conf.list_rules:
             if not self.conf.scan:
                 self.conf.scan = self._get_default_module_set()
             if not self.conf.scan:
-                return ReturnValues.SCENARIO
+                return PreupgReturnCodes.SCENARIO
             rules = [self.conf.scan + ':' + x
                      for x in XccdfHelper.get_list_rules(self.conf.scan)]
             log_message('\n'.join(rules))
@@ -656,12 +656,12 @@ class Application(object):
 
         if self.conf.upload and self.conf.results:
             if not self.upload_results():
-                return ReturnValues.SEND_REPORT_TO_UI
+                return PreupgReturnCodes.SEND_REPORT_TO_UI
             return 0
 
         if self.conf.mode and self.conf.select_rules:
             log_message(settings.options_not_allowed)
-            return ReturnValues.MODE_SELECT_RULES
+            return PreupgReturnCodes.MODE_SELECT_RULES
 
         if not self.conf.riskcheck and not self.conf.cleanup:
             # If force option is not mentioned and user selects NO then exit
@@ -676,7 +676,7 @@ class Application(object):
                             " option.\nValid are: %s.\n"
                             % ", ".join(settings.migration_options)
                         )
-                        return ReturnValues.INVALID_CLI_OPTION
+                        return PreupgReturnCodes.INVALID_CLI_OPTION
                 if SystemIdentification.get_arch() == "i386" or \
                         SystemIdentification.get_arch() == "i686":
                     if not self.conf.dst_arch:
@@ -685,7 +685,7 @@ class Application(object):
                                    SystemIdentification.get_arch(), text)
                 if not show_message(settings.warning_text + text):
                     # User does not want to continue
-                    return ReturnValues.USER_ABORT
+                    return PreupgReturnCodes.USER_ABORT
 
         if self.conf.text:
             # Test whether w3m, lynx and elinks packages are installed
@@ -697,12 +697,12 @@ class Application(object):
                     break
             if not found:
                 log_message(settings.converter_message.format(' '.join(SystemIdentification.get_convertors())))
-                return ReturnValues.MISSING_TEXT_CONVERTOR
+                return PreupgReturnCodes.MISSING_TEXT_CONVERTOR
 
         if os.geteuid() != 0:
             print("Need to be root", end="\n")
             if not self.conf.debug:
-                return ReturnValues.ROOT
+                return PreupgReturnCodes.ROOT
 
         if self.conf.cleanup:
             self.clean_preupgrade_environment()
@@ -730,7 +730,7 @@ class Application(object):
                 log_message("The module set '%s' is not installed.\nFor a list"
                             " of installed module sets, use -l option."
                             % self.conf.scan)
-                return ReturnValues.SCENARIO
+                return PreupgReturnCodes.SCENARIO
 
         if self.conf.contents:
             self.content = os.path.join(os.getcwd(), self.conf.contents)
@@ -742,11 +742,11 @@ class Application(object):
         if self.conf.scan or self.conf.contents:
             if not os.path.exists(settings.openscap_binary):
                 log_message("Oscap with SCE enabled is not installed")
-                return ReturnValues.MISSING_OPENSCAP
+                return PreupgReturnCodes.MISSING_OPENSCAP
             if not os.access(settings.openscap_binary, os.X_OK):
                 log_message("Oscap with SCE %s is not executable"
                             % settings.openscap_binary)
-                return ReturnValues.MISSING_OPENSCAP
+                return PreupgReturnCodes.MISSING_OPENSCAP
 
             current_dir = os.getcwd()
             os.chdir("/tmp")
@@ -759,7 +759,7 @@ class Application(object):
             FileHelper.remove_home_issues()
             if self.conf.upload:
                 if not self.upload_results():
-                    retval = ReturnValues.SEND_REPORT_TO_UI
+                    retval = PreupgReturnCodes.SEND_REPORT_TO_UI
             os.chdir(current_dir)
             return retval
 
