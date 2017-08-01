@@ -45,8 +45,10 @@ class OscapGroupXml(object):
 
     def find_all_ini(self):
         """
-        This function is used for finding all _fix files in the user defined
-        directory
+        Find all ini files in the self.dirname path. Then read each ini file
+        and save all options in 'preupgrade' section with their values to
+        self.loded dict:
+        self.loaded[ini_file_path] = {option1: value, option2: value, ...}
         """
         for dir_name in os.listdir(self.dirname):
             if dir_name.endswith(".ini"):
@@ -54,8 +56,8 @@ class OscapGroupXml(object):
         for file_name in self.lists:
             if FileHelper.check_file(file_name, "r") is False:
                 continue
-            config = configparser.ConfigParser()
             filehander = codecs.open(file_name, 'r', encoding=settings.defenc)
+            config = configparser.ConfigParser()
             config.readfp(filehander)
             fields = {}
             section = 'preupgrade'
@@ -92,8 +94,8 @@ class OscapGroupXml(object):
     def write_profile_xml(self, target_tree):
         """The function stores all-xccdf.xml file into content directory"""
         file_name = os.path.join(self.dirname, "all-xccdf.xml")
-        print ('File which can be used by Preupgrade-Assistant is: %s'
-               % file_name)
+        print('File which can be used by Preupgrade-Assistant is: %s'
+              % file_name)
         try:
             # encoding must be set! otherwise ElementTree return non-ascii
             # characters as html entities instead, which are unsusable for us
@@ -104,9 +106,7 @@ class OscapGroupXml(object):
                           % (file_name, ioe.message))
 
     def write_list_rules(self):
-        end_point = self.dirname.find(
-            ModuleSetUtils.get_module_set_dirname(self.dirname))
-        rule_name = '_'.join(self.dirname[end_point:].split('/')[1:])
+        rule_name = os.path.basename(self.dirname)
         file_list_rules = os.path.join(settings.UPGRADE_PATH,
                                        settings.file_list_rules)
         lines = []
@@ -115,11 +115,5 @@ class OscapGroupXml(object):
                                                 method=True)
         else:
             lines = []
-        for values in iter(self.loaded.values()):
-            check_script = [v for k, v in iter(values.items())
-                            if k == 'check_script']
-            if check_script:
-                check_script = os.path.splitext(''.join(check_script))[0]
-                lines.append(settings.xccdf_tag + rule_name + '_' +
-                             check_script + '\n')
+        lines.append(settings.xccdf_tag + rule_name + '_check' + '\n')
         FileHelper.write_to_file(file_list_rules, "wb", lines)
